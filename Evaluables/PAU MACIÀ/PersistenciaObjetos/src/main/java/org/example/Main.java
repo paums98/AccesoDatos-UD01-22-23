@@ -8,21 +8,144 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.List;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-public class Main {
-    public static void main(String[] args) throws IOException{
-        //Pelicula pelicula = leerDatos();
-        //InsertarObjeto(pelicula);
-        List<Pelicula> peliculas = leerPeliculasFichero();
 
-        for(Pelicula peli :peliculas){
-            System.out.println(peli);
-        }
+public class Main {
+    //Array estático para almacenar las películas
+    static List<Pelicula> pelisFichero = new ArrayList<>();
+    //
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        int eleccion = 0;
+        Pelicula pelicula;
+        establecerLista();
+
+        System.out.println("Mi videoclub");
+        System.out.println("------------");
+        do {
+            /* USABA ESTE FOR PARA COMPROBAR QUE SE INTRODUJESEN TODOS LOS DATOS NUEVOS AL ARRAY ESTÁTICO
+            for(Pelicula p : pelisFichero){
+                System.out.println("ARRAY");
+                System.out.println(p);
+            }*/
+            //MENÚ
+            System.out.println("");
+            System.out.println("Menú: ");
+            System.out.println("1. Insertar Película");
+            System.out.println("2. Modificar Película");
+            System.out.println("3. Eliminar Película");
+            System.out.println("4. Visualizar Película");
+            System.out.println("5. Salir");
+            System.out.println("");
+            System.out.println("Escoja una opción: ");
+            eleccion = sc.nextInt();
+            sc.nextLine();
+            switch (eleccion) {
+                case 1:
+                    pelicula = leerDatos();
+                    InsertarObjeto(pelicula);
+                    break;
+                case 2:
+                    modificarPelicula();
+                    break;
+                case 3:
+                    eliminarPelicula();
+                    break;
+                case 4:
+                    leerPeliculasFichero();
+
+
+                    break;
+                case 5:
+                    System.out.println("Finalizando el programa...");
+                    break;
+            }
+        } while (eleccion != 5);
+
 
     }
 
-    public static Pelicula leerDatos(){
+    //Método para eliminar película, elimina y vuelve a introducir los objetos menos el que le indiquemos
+    public static void eliminarPelicula() {
+
+        String titulo;
+        pelisFichero.clear();
+        System.out.println("Indica el título de la película a eliminar");
+        titulo = sc.nextLine();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/resources/peliculas.dat"))) {
+
+            while (true) {
+                try {
+                    Pelicula pelicula = (Pelicula) ois.readObject();
+                    if (!pelicula.getTitulo().equalsIgnoreCase(titulo)) {
+                        pelisFichero.add(pelicula);
+                    }
+                } catch (EOFException eof) {
+                    break;
+                }
+            }
+
+        } catch (IOException ioException) {
+            System.out.println("Error al leer el archivo de películas: " + ioException.getMessage());
+        } catch (ClassNotFoundException classNotFoundException) {
+            System.out.println("Error al deserializar la película: " + classNotFoundException.getMessage());
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/peliculas.dat"))) {
+            for (Pelicula peli : pelisFichero) {
+                oos.writeObject(peli);
+            }
+        } catch (IOException ioException) {
+            System.out.println("Error al escribir en el archivo de películas: " + ioException.getMessage());
+        }
+        System.out.println();
+        System.out.println("Película "+titulo +" eliminada exitosamente.");
+    }
+
+    //Método para modificar, extraemos y añadimos de nuevo con el formato cambiado
+    public static void modificarPelicula() {
+        pelisFichero.clear();
+        String titulo, nuevoFormato;
+        System.out.println("Indica el título de la película a modificar: ");
+        titulo = sc.nextLine();
+        System.out.println("Indica el nuevo formato para esta película: ");
+        nuevoFormato = sc.nextLine();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/resources/peliculas.dat"))) {
+
+            while (true) {
+                try {
+                    Pelicula pelicula = (Pelicula) ois.readObject();
+                    if (pelicula.getTitulo().equalsIgnoreCase(titulo)) {
+                        pelicula.setFormato(nuevoFormato);
+                    }
+                    pelisFichero.add(pelicula);
+                } catch (EOFException eof) {
+                    break;
+                }
+            }
+
+        } catch (IOException ioException) {
+            System.out.println("Error al leer el archivo de películas: " + ioException.getMessage());
+        } catch (ClassNotFoundException classNotFoundException) {
+            System.out.println("Error al deserializar la película: " + classNotFoundException.getMessage());
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/resources/peliculas.dat"))) {
+            for (Pelicula peli : pelisFichero) {
+                oos.writeObject(peli);
+            }
+        } catch (IOException ioException) {
+            System.out.println("Error al escribir en el archivo de películas: " + ioException.getMessage());
+        }
+
+        System.out.println("Formato modificado exitosamente.");
+
+    }
+
+    //Método para que el usuario introduzca los datos, devuelve el objeto ya construído
+    public static Pelicula leerDatos() {
         DateTimeFormatter formater = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         Pelicula pelicula;
@@ -37,58 +160,86 @@ public class Main {
         System.out.println("Introduce los actores entre punto y coma: ");
         actores = Arrays.asList(sc.nextLine().split(";"));
         System.out.println("Introduce los directores entre punto y coma: ");
-        directores=Arrays.asList(sc.nextLine().split(";"));
+        directores = Arrays.asList(sc.nextLine().split(";"));
         System.out.println("Introduce la fecha de salida: ");
         fechaSalida = LocalDate.parse(sc.nextLine(), formater);
         System.out.println("Introduce el formato: ");
         formato = sc.nextLine();
 
-        pelicula = new Pelicula(titulo, actores,directores,fechaSalida,formato);
+        pelicula = new Pelicula(titulo, actores, directores, fechaSalida, formato);
         return pelicula;
     }
+
+    //Inserta el objeto que le pasamos al fichero y a la lista
     public static void InsertarObjeto(Pelicula pelicula) {
-        try{
+        try {
             File archivo = new File("src/main/resources/peliculas.dat");
 
-            if(!archivo.exists()){
+            if (!archivo.exists()) {
                 archivo.createNewFile();
             }
 
             FileOutputStream fos = new FileOutputStream(archivo);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(pelicula);
+
+            pelisFichero.add(pelicula);
+
+            for (Pelicula peli:pelisFichero) {
+                oos.writeObject(peli);
+            }
             oos.close();
-        }catch (IOException e){
-            System.out.println("error fichero");
-        }catch (Exception e){
-            System.out.println("hubo problema");
+        } catch (IOException io) {
+            System.out.println("Error al leer el archivo de películas: " + io.getMessage());
+        } catch (Exception e) {
+            System.out.println("Hubo algún problema.");
         }
     }
-    public static List<Pelicula> leerPeliculasFichero() throws IOException {
-        List<Pelicula> listaPeli = null;
-        try{
-            listaPeli = new ArrayList<>();
-            File archivo = new File("src/main/resources/peliculas.dat");
-            FileInputStream fis = new FileInputStream(archivo);
-            ObjectInputStream ois = new ObjectInputStream(fis);
 
-            try{
-                while (true){
+    //Lee el objeto que le indiquemos
+    public static void leerPeliculasFichero() {
+        String titulo;
+        System.out.println("Indica el título de la película a visualizar");
+        titulo = sc.nextLine();
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/resources/peliculas.dat"))) {
+            boolean encontrado = false;
+            while (true) {
+                try {
                     Pelicula pelicula = (Pelicula) ois.readObject();
-                    listaPeli.add(pelicula);
+                    if (pelicula.getTitulo().equalsIgnoreCase(titulo)) {
+                        System.out.println(pelicula);
+                        encontrado = true;
+                    }
+                } catch (EOFException eof) {
+                    break;
                 }
-            }catch (EOFException eof){
-                ois.close();
+            }
+
+            if (!encontrado) {
+                System.out.println("Película no encontrada.");
+            }
+        } catch (IOException io) {
+            System.out.println("Error al leer el archivo de películas: " + io.getMessage());
+        } catch (ClassNotFoundException classNotFoundException) {
+            System.out.println("Error al deserializar la película: " + classNotFoundException.getMessage());
+        }
+    }
+
+    //Inicializa la lista con los objetos del fichero, método indispensable
+    public static void establecerLista(){
+        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/resources/peliculas.dat"))){
+            while (true) {
+                try{
+                    Pelicula pelicula = (Pelicula) ois.readObject();
+                    pelisFichero.add(pelicula);
+                }catch (EOFException eof){
+                    break;
+                }
             }
         }catch (IOException io){
-            System.out.println("error fichero");
-            listaPeli=null;
-        }catch (Exception e){
-            System.out.println("problema");
-            listaPeli=null;
+            System.out.println("Error al leer el archivo de películas: " + io.getMessage());
+        }catch (ClassNotFoundException classNotFoundException){
+            System.out.println("Error al deserializar la película: " + classNotFoundException.getMessage());
         }
-
-        return listaPeli;
-
     }
 }
