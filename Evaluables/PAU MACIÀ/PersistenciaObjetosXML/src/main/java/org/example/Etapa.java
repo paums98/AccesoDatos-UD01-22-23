@@ -1,12 +1,17 @@
 package org.example;
 
-import java.util.List;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-public class Etapa {
+import java.io.Serializable;
+import java.util.List;
+@XStreamAlias("etapa")
+public class Etapa implements Serializable {
     private Lugar destino;
     private Hotel hotel;
     private int numNoches;
     private List<String> puntosVisita;
+
+    private static final long serialVersionUID = 5488764001798701613L;
 
     public Etapa(){
 
