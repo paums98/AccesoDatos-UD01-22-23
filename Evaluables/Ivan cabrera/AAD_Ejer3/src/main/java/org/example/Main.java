@@ -1,9 +1,6 @@
 package org.example;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,7 +9,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+
 
         Scanner sc = new Scanner(System.in);
 
@@ -37,15 +36,12 @@ public class Main {
             }
 
             else if(opcion == 3){
-                eliminarPeliculaPorTitulo();
-
+                Borrar();
                 opcion = PedirOpcion(opcion);
             }
 
             else if(opcion == 4){
-                System.out.println("Introduzca el título: ");
-                String archivo = sc.nextLine();
-
+                Visualizar();
                 opcion = PedirOpcion(opcion);
             }
 
@@ -68,12 +64,42 @@ public class Main {
 
     static void Insertar() throws IOException {
 
+        ArrayList<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+
+        try{
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
+            ficherodat.createNewFile();
+            // Abre el archivo en modo "lectura/escritura"
+            FileInputStream filein =
+                    new FileInputStream(ficherodat);
+
+            ObjectInputStream objectin =
+                    new ObjectInputStream(filein);
+
+            Pelicula pelicula = null;
+
+
+            while(true){
+                pelicula = (Pelicula) objectin.readObject();
+                listaPeliculas.add(pelicula);
+
+            }
+        }catch (IOException error){
+
+        }catch (Exception ex){
+
+        }
+
         File ficherodat =
                 new File("src/main/resources/peliculas.dat");
 
         // Abre el archivo en modo "append" para añadir contenido sin borrar lo existente
-        RandomAccessFile aleatorio =
-                new RandomAccessFile(ficherodat, "rw");
+        FileOutputStream aleatorio =
+                new FileOutputStream(ficherodat);
+
+        ObjectOutputStream objectout =
+                new ObjectOutputStream(aleatorio);
 
         System.out.println(" ");
 
@@ -100,48 +126,65 @@ public class Main {
 
         Pelicula peli = new Pelicula(titulo, actoresArray, directoresArray, fecha, formato);
 
-        // Mueve el puntero al final del archivo antes de escribir
-        aleatorio.seek(aleatorio.length());
+        listaPeliculas.add(peli);
 
-        // Escribe los datos de la película
-        aleatorio.writeUTF(peli.visualizar());
+        for(int i = 0; i < listaPeliculas.size(); i++){
+            objectout.writeObject(listaPeliculas.get(i));
+        }
 
-        // Cierra el archivo
         aleatorio.close();
     }
 
     static void Modificar() throws IOException {
-        File ficherodat = new File("src/main/resources/peliculas.dat");
-
-        // Abre el archivo en modo "lectura/escritura"
-        RandomAccessFile aleatorio = new RandomAccessFile(ficherodat, "rw");
 
         Scanner sc = new Scanner(System.in);
+
+        boolean peliencontrada = false;
+        List<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+        Pelicula peliculaModificada;
+
 
         System.out.println("Introduzca el título de la película que desea modificar: ");
         String tituloBuscar = sc.nextLine();
 
-        boolean peliculaEncontrada = false;
-        long posicionInicio = 0;
+        try{
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
 
-        while (aleatorio.getFilePointer() < aleatorio.length()) {
-            posicionInicio = aleatorio.getFilePointer();
-            String linea = aleatorio.readLine();
-            if (linea.startsWith("Título: ")) {
-                String titulo = linea.substring(8);
-                if (titulo.equals(tituloBuscar)) {
-                    peliculaEncontrada = true;
-                    break;
+            // Abre el archivo en modo "lectura/escritura"
+            FileInputStream filein =
+                    new FileInputStream(ficherodat);
+
+            ObjectInputStream objectin =
+                    new ObjectInputStream(filein);
+
+            Pelicula pelicula = null;
+
+            while(true){
+                pelicula = (Pelicula) objectin.readObject();
+                String tit = pelicula.getTitulo();
+                if(tit.equals(tituloBuscar)){
+                    peliencontrada = true;
+                }else{
+                    listaPeliculas.add(pelicula);
                 }
             }
+        }catch (IOException error){
+
+        }catch (Exception ex){
+
         }
 
-        if (peliculaEncontrada) {
-            // Lee los datos existentes de la película
-            String actores = aleatorio.readLine().substring(9);
-            String directores = aleatorio.readLine().substring(12);
-            String fechaSalidaTexto = aleatorio.readLine().substring(16);
-            String formato = aleatorio.readLine().substring(9);
+        if(peliencontrada){
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
+
+            // Abre el archivo en modo "append" para añadir contenido sin borrar lo existente
+            FileOutputStream aleatorio =
+                    new FileOutputStream(ficherodat);
+
+            ObjectOutputStream objectout =
+                    new ObjectOutputStream(aleatorio);
 
             // Solicita los nuevos datos de la película
             System.out.println("Introduzca los nuevos actores separados por coma y un espacio: ");
@@ -160,70 +203,106 @@ public class Main {
             System.out.println("Introduzca el nuevo formato: ");
             String nuevoFormato = sc.nextLine();
 
-            // Mueve el puntero al inicio de la película a modificar
-            aleatorio.seek(posicionInicio);
+            peliculaModificada = new Pelicula(tituloBuscar, nuevosActoresArray, nuevosDirectoresArray, nuevaFecha, nuevoFormato);
+            listaPeliculas.add(peliculaModificada);
 
-            // Escribe los nuevos datos de la película
-            aleatorio.writeBytes("Título: " + tituloBuscar + "\n");
-            aleatorio.writeBytes("Actores: " + String.join(", ", nuevosActoresArray) + "\n");
-            aleatorio.writeBytes("Directores: " + String.join(", ", nuevosDirectoresArray) + "\n");
-            aleatorio.writeBytes("Fecha de Salida: " + nuevaFecha.format(formatoFecha) + "\n");
-            aleatorio.writeBytes("Formato: " + nuevoFormato + "\n");
+            for(int i = 0; i < listaPeliculas.size(); i++){
+                objectout.writeObject(listaPeliculas.get(i));
+            }
 
-            System.out.println("Película modificada exitosamente.");
-        } else {
-            System.out.println("No se encontró una película con el título proporcionado.");
+            aleatorio.close();
         }
-
-        // Cierra el archivo
-        aleatorio.close();
     }
 
-    static void eliminarPeliculaPorTitulo() throws IOException {
-        File ficherodat = new File("src/main/resources/peliculas.dat");
+    static void Borrar() throws IOException {
+        Scanner sc = new Scanner(System.in);
 
-        // Abre el archivo en modo "lectura/escritura"
-        RandomAccessFile aleatorio = new RandomAccessFile(ficherodat, "rw");
+        boolean peliencontrada = false;
+        List<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+        Pelicula peliculaModificada;
+
+
+        System.out.println("Introduzca el título de la película que desea modificar: ");
+        String tituloBuscar = sc.nextLine();
+
+        try{
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
+
+            // Abre el archivo en modo "lectura/escritura"
+            FileInputStream filein =
+                    new FileInputStream(ficherodat);
+
+            ObjectInputStream objectin =
+                    new ObjectInputStream(filein);
+
+            Pelicula pelicula = null;
+
+            while(true){
+                pelicula = (Pelicula) objectin.readObject();
+                String tit = pelicula.getTitulo();
+                if(tit.equals(tituloBuscar)){
+                    peliencontrada = true;
+                }else{
+                    listaPeliculas.add(pelicula);
+                }
+            }
+        }catch (IOException error){
+
+        }catch (Exception ex){
+
+        }
+
+        if(peliencontrada){
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
+
+            // Abre el archivo en modo "append" para añadir contenido sin borrar lo existente
+            FileOutputStream aleatorio =
+                    new FileOutputStream(ficherodat);
+
+            ObjectOutputStream objectout =
+                    new ObjectOutputStream(aleatorio);
+
+            for(int i = 0; i < listaPeliculas.size(); i++){
+                objectout.writeObject(listaPeliculas.get(i));
+            }
+
+            aleatorio.close();
+        }
+    }
+
+    static void Visualizar() throws IOException {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Introduzca el título de la película que desea eliminar: ");
-        String tituloEliminar = sc.nextLine();
+        boolean peliencontrada = false;
+        List<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+        Pelicula peliculaModificada;
 
-        List<String> peliculasNoEliminadas = new ArrayList<>();
+        try{
+            File ficherodat =
+                    new File("src/main/resources/peliculas.dat");
 
-        // Lee cada película del archivo una por una
-        while (aleatorio.getFilePointer() < aleatorio.length()) {
-            String linea = aleatorio.readLine();
-            if (linea.startsWith("Título: ")) {
-                String titulo = linea.substring(8);
-                // Si el título no coincide, agrega la película a la lista de películas no eliminadas
-                if (titulo.equals(tituloEliminar)) {
-                    peliculasNoEliminadas.add(linea);
-                    // Lee y agrega las líneas de actores, directores, fecha y formato
-                    for (int i = 0; i < 4; i++) {
-                        peliculasNoEliminadas.add(aleatorio.readLine());
-                    }
-                }
+            // Abre el archivo en modo "lectura/escritura"
+            FileInputStream filein =
+                    new FileInputStream(ficherodat);
+
+            ObjectInputStream objectin =
+                    new ObjectInputStream(filein);
+
+            Pelicula pelicula = null;
+
+            while(true){
+                pelicula = (Pelicula) objectin.readObject();
+                System.out.println(pelicula.visualizar());
+                listaPeliculas.add(pelicula);
+
             }
+        }catch (IOException error){
+
+        }catch (Exception ex){
+
         }
-
-        // Cierra el archivo original
-        aleatorio.close();
-
-        // Vuelve a abrir el archivo en modo de escritura
-        aleatorio = new RandomAccessFile(ficherodat, "rw");
-
-        // Escribe las películas no eliminadas de nuevo en el archivo
-        for (String linea : peliculasNoEliminadas) {
-            aleatorio.writeBytes(linea + "\n");
-        }
-
-        // Cierra el archivo nuevamente
-        aleatorio.close();
-
-        System.out.println("Película eliminada exitosamente.");
     }
 }
-
-

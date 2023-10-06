@@ -9,6 +9,47 @@ public class Pelicula implements Serializable {
     String[] directores;
     LocalDate fechaSalida;
     String formato;
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String[] getActores() {
+        return actores;
+    }
+
+    public void setActores(String[] actores) {
+        this.actores = actores;
+    }
+
+    public String[] getDirectores() {
+        return directores;
+    }
+
+    public void setDirectores(String[] directores) {
+        this.directores = directores;
+    }
+
+    public LocalDate getFechaSalida() {
+        return fechaSalida;
+    }
+
+    public void setFechaSalida(LocalDate fechaSalida) {
+        this.fechaSalida = fechaSalida;
+    }
+
+    public String getFormato() {
+        return formato;
+    }
+
+    public void setFormato(String formato) {
+        this.formato = formato;
+    }
+
     public Pelicula(String titulo, String[] actores, String[] directores, LocalDate fechaSalida, String formato){
         this.titulo = titulo;
         this.actores = actores;
