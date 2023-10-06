@@ -12,7 +12,7 @@ public class Viaje implements Serializable {
     private LocalDate fechaLlegada;
 
     @XStreamImplicit(itemFieldName = "etapas")
-    private List<Etapa> etapas;
+    private List<Etapa> estapas;
     private Lugar salida;
 
     private static final long serialVersionUID = 8860155335702972022L;
@@ -21,10 +21,10 @@ public class Viaje implements Serializable {
 
     }
 
-    public Viaje(LocalDate fechaSalida, LocalDate fechaLlegada, List<Etapa> etapas, Lugar salida) {
+    public Viaje(LocalDate fechaSalida, LocalDate fechaLlegada, List<Etapa> estapas, Lugar salida) {
         this.fechaSalida = fechaSalida;
         this.fechaLlegada = fechaLlegada;
-        this.etapas = etapas;
+        this.estapas = estapas;
         this.salida = salida;
     }
 
@@ -45,11 +45,11 @@ public class Viaje implements Serializable {
     }
 
     public List<Etapa> getEtapas() {
-        return etapas;
+        return estapas;
     }
 
     public void setEtapas(List<Etapa> etapas) {
-        this.etapas = etapas;
+        this.estapas = etapas;
     }
 
     public Lugar getSalida() {
@@ -65,7 +65,7 @@ public class Viaje implements Serializable {
         return "Viaje{" +
                 "fechaSalida=" + fechaSalida +
                 ", fechaLlegada=" + fechaLlegada +
-                ", etapas=" + etapas +
+                ", etapas=" + estapas +
                 ", salida=" + salida +
                 '}';
     }
