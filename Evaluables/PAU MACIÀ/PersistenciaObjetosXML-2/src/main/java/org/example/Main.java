@@ -2,18 +2,22 @@ package org.example;
 
 import com.thoughtworks.xstream.XStream;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
-        leerXML();
+        ListaInstitutos lista = leerXML();
+        for (Instituto insti:
+             lista.getLista()) {
+            System.out.println(insti);
+        }
+        escribirBinario(lista);
 
     }
 
-    public static void leerXML() throws FileNotFoundException {
+    public static ListaInstitutos leerXML() throws FileNotFoundException {
         XStream xstream = new XStream();
 
         xstream.processAnnotations(Instituto.class);
@@ -35,9 +39,14 @@ public class Main {
                 org.example.Falta.class
         });
         ListaInstitutos lista = (ListaInstitutos) xstream.fromXML(new FileInputStream("instituto.xml"));
-        for(Instituto instituto:lista.getLista()){
-            System.out.println(instituto);
-        }
+        return lista;
 
+    }
+    public static void escribirBinario(ListaInstitutos lista){
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("institutos.dat"))){
+            oos.writeObject(lista);
+        }catch (IOException e){
+            e.getMessage();
+        }
     }
 }

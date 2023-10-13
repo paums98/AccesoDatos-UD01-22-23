@@ -12,14 +12,14 @@ public class Persona implements Serializable {
     private String nombre;
     private String apellido1;
     private String apellido2;
-    private LocalDate fechaNacimiento;
+    private String fechaNacimiento;
     private double sueldoBruto;
 
     public Persona(){
 
     }
 
-    public Persona(final String dni, final String nombre, final String apellido1, final String apellido2, final LocalDate fechaNacimiento, final double sueldoBruto) {
+    public Persona(final String dni, final String nombre, final String apellido1, final String apellido2, final String fechaNacimiento, final double sueldoBruto) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido1 = apellido1;
@@ -61,11 +61,11 @@ public class Persona implements Serializable {
         this.apellido2 = apellido2;
     }
 
-    public LocalDate getFechaNacimiento() {
+    public String getFechaNacimiento() {
         return this.fechaNacimiento;
     }
 
-    public void setFechaNacimiento(final LocalDate fechaNacimiento) {
+    public void setFechaNacimiento(final String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 

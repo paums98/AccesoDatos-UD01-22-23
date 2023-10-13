@@ -15,7 +15,7 @@ public class Administrativo extends Persona{
         this.tiempoContrato = tiempoContrato;
     }
 
-    public Administrativo(final String dni, final String nombre, final String apellido1, final String apellido2, final LocalDate fechaNacimiento, final double sueldoBruto, final int tiempoContrato) {
+    public Administrativo(final String dni, final String nombre, final String apellido1, final String apellido2, final String fechaNacimiento, final double sueldoBruto, final int tiempoContrato) {
         super(dni, nombre, apellido1, apellido2, fechaNacimiento, sueldoBruto);
         this.tiempoContrato = tiempoContrato;
     }

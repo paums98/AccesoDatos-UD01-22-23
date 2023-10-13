@@ -1,22 +1,25 @@
 package org.example;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.io.Serializable;
+import java.util.List;
 
 @XStreamAlias("instituto")
 public class Instituto implements Serializable {
 
     private String nombre;
-    private Persona persona;
+    @XStreamImplicit(itemFieldName = "persona")
+    private List<Persona> personas;
 
     public Instituto() {
 
     }
 
-    public Instituto(final String nombre, final Persona persona) {
+    public Instituto(final String nombre, final List<Persona> personas) {
         this.nombre = nombre;
-        this.persona = persona;
+        this.personas = personas;
     }
 
     public String getNombre() {
@@ -27,19 +30,19 @@ public class Instituto implements Serializable {
         this.nombre = nombre;
     }
 
-    public Persona getPersona() {
-        return this.persona;
+    public List<Persona> getPersonas() {
+        return this.personas;
     }
 
-    public void setPersona(final Persona persona) {
-        this.persona = persona;
+    public void setPersonas(final List<Persona> personas) {
+        this.personas = personas;
     }
 
     @Override
     public String toString() {
         return "Instituto{" +
                 "nombre='" + nombre + '\'' +
-                ", persona=" + persona +
+                ", personas=" + personas +
                 '}';
     }
 }

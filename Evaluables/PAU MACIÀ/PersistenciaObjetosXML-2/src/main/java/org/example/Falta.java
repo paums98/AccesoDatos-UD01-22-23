@@ -8,21 +8,21 @@ import java.time.LocalDate;
 @XStreamAlias("falta")
 public class Falta implements Serializable {
 
-    private LocalDate fecha;
+    private String fecha;
     private String razon;
 
     public Falta(){}
 
-    public Falta(final LocalDate fecha, final String razon) {
+    public Falta(final String fecha, final String razon) {
         this.fecha = fecha;
         this.razon = razon;
     }
 
-    public LocalDate getFecha() {
+    public String getFecha() {
         return this.fecha;
     }
 
-    public void setFecha(final LocalDate fecha) {
+    public void setFecha(final String fecha) {
         this.fecha = fecha;
     }
 
