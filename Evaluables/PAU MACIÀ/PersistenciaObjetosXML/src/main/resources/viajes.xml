@@ -1,1 +1,16 @@
-<list/>
+<list>
+  <viaje>
+    <fechaSalida>2023-10-04</fechaSalida>
+    <fechaLlegada>2023-10-04</fechaLlegada>
+    <etapas>
+      <destino>
+        <ciudad>Madrid</ciudad>
+        <pais>España</pais>
+      </destino>
+      <hotel>
+        <nombre>Melia</nombre>
+        <direccion>Madrid</direccion>
+        <precio>34.5</precio>
+      </hotel>
+      <numNoches>2</numNoches>
+      <puntosVisita class="java.util.ImmutableCollections$List12"

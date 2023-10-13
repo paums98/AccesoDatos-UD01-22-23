@@ -10,6 +10,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
+
+        //Al principio funcionaba, aunque poniendo las etapas como null, al tratar de corregirlo da error
         List<Viaje> viajes = new ArrayList<>();
 
         leerFichero(viajes);
