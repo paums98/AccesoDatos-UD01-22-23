@@ -11,7 +11,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
 
-        //Al principio funcionaba, aunque poniendo las etapas como null, al tratar de corregirlo da error
+        //Al principio funcionaba, aunque poniendo las etapas como null, al tratar de corregirlo cambiándolo por estapas no me sale bien, no sé cual puede ser el problema
         List<Viaje> viajes = new ArrayList<>();
 
         leerFichero(viajes);
